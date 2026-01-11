@@ -48,7 +48,7 @@ whatsapp/
 
 3. Start the server:
    ```bash
-   uvicorn server:app --reload --port 8000
+   python server.py
    ```
 
 ### Frontend
