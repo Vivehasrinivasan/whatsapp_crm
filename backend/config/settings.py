@@ -24,6 +24,16 @@ class Settings(BaseSettings):
     # Debug Mode
     debug: bool = os.getenv("DEBUG", "False").lower() == "true"
     
+    # Email Configuration
+    sender_email: str = os.getenv("SENDER_EMAIL", "")
+    google_app_password: str = os.getenv("GOOGLE_APP_PASSWORD", "")
+    
+    # Backblaze B2 Configuration
+    b2_application_key_id: str = os.getenv("B2_APPLICATION_KEY_ID", "")
+    b2_application_key: str = os.getenv("B2_APPLICATION_KEY", "")
+    b2_bucket_name: str = os.getenv("B2_BUCKET_NAME", "")
+    b2_bucket_id: str = os.getenv("B2_BUCKET_ID", "")
+    
     @property
     def cors_origins_list(self) -> List[str]:
         """Get CORS origins as a list."""

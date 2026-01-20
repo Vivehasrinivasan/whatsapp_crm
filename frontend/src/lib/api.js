@@ -16,6 +16,10 @@ export const authAPI = {
   login: (email, password) => api.post('/auth/login', { email, password }),
   register: (email, password, full_name) => api.post('/auth/register', { email, password, full_name }),
   logout: () => api.post('/auth/logout'),
+  sendOTP: (email) => api.post('/auth/send-otp', { email }),
+  verifyOTP: (email, otp) => api.post('/auth/verify-otp', { email, otp }),
+  forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
+  resetPassword: (email, otp, new_password) => api.post('/auth/reset-password', { email, otp, new_password }),
 };
 
 // API endpoints for dashboard

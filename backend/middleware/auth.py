@@ -97,4 +97,4 @@ async def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authentication credentials"
         )
-    return {"id": user_id, "email": payload.get("email")}
+    return {"user_id": user_id, "id": user_id, "email": payload.get("email")}
