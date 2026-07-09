@@ -152,6 +152,12 @@ class BatchService:
             except Exception as _offer_err:
                 import logging
                 logging.getLogger(__name__).warning(f"Offer matching skipped: {_offer_err}")
+                
+            # Fetch products to build name map
+            products_cursor = self.db.products.find({"shop_id": shop_id, "user_id": user_id})
+            prod_name_map = {}
+            async for p in products_cursor:
+                prod_name_map[p["product_id"]] = p.get("product_name") or p["product_id"]
         
         # Split into batches
         total_batches = math.ceil(len(customers) / batch_size)
@@ -219,7 +225,8 @@ class BatchService:
                 cust_insight = behavior_map.get(cust_key) or {}
 
                 # Phase 3: resolve best matched offer for this customer
-                best_offer = offer_match_map.get(cust_key) or {}
+                customer_offers = offer_match_map.get(cust_key) or []
+                best_offer = customer_offers[0] if customer_offers else {}
                 if not best_offer:
                     offer_title = "Great deals throughout our store"
                     offer_discount_str = "the best wholesale prices"
@@ -240,6 +247,9 @@ class BatchService:
                     product_ids = best_offer.get("product_ids", [])
                     offer_product_str = ", ".join(str(p) for p in product_ids) if product_ids else "your next household purchase"
 
+                # Generate formatted offer list
+                from services.offers_service import OffersService
+                offer_list_str = OffersService.format_offer_list(customer_offers, prod_name_map if shop_id else None)
 
                 # Build unified data dict for placeholder substitution
                 hydration_data = {
@@ -256,6 +266,7 @@ class BatchService:
                     "offer_title":    offer_title,
                     "offer_discount": offer_discount_str,
                     "offer_product":  offer_product_str,
+                    "offer_list":     offer_list_str,
                 }
                 
                 message_content = prepare_message(customer_template["content"], hydration_data)
